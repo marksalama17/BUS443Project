@@ -1,0 +1,97 @@
+{% extends "studentinformation/base.html" %}
+{% block content %}
+
+ <div class="container"> 
+    <div class="jumbotron text-center"> 
+      <h1>Enrollment</h1> 
+    </div> 
+</div>
+
+<div class="container">
+    <select id="sname">
+    {% if request.session.studentid %}
+        <option selected={{ request.session.studentid }}>{{ request.session.studentid }}</option>
+    {% else %}
+        <option selected="">Select Student ID</option>
+    {% endif %}
+    {% for sname in studentinformation %}
+          <option value="{{ sname.studentid }}">{{ sname.studentid}}</option>
+    {% endfor %}
+    </select>
+    <br/>
+    <br/>
+</div>
+
+<div class="container">
+    <select id="cotitle">
+      <option selected="">Select Class</option>
+      {% for cotitle in courses %}
+          <option value="{{ cotitle.coursetitle }}">{{ cotitle.coursetitle  }}</option>
+      {% endfor %}
+    </select>
+    <br/>
+    <br/>
+    <button type="button" id="enrollbtn" class="btn btn-light">Enroll</button>
+    <br/>
+    <br/>
+</div>
+
+<div class="container">
+    <table class="table">
+        <thead>
+          <tr>
+              <th> Student ID</th>
+              <th> Course Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in enrollment %}
+          <tr>
+              <td>{{ row.studentid }}</td>
+              <td>{{ row.coursetitle }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+
+      $("#enrollbtn").click(function(){
+         $.ajax({
+
+              url: "{% url 'enrollment' %}",
+              data: {
+                sname: $("#sname").val(),
+                cotitle: $("#cotitle").val()
+              },
+              success: function(data){
+                  if(data=='Success'){
+                      window.location = "{% url 'enrollment' %}"
+                  }
+                  else {
+                      alert("Student is already enrolled in this course")
+                  }
+              }
+          });
+
+      });
+
+      $("#sname").change(function(){
+          $.ajax({
+              url: "{% url 'enrollment' %}",
+              data: {
+                  sname: $("#sname").val()
+              },
+              success: function(data){
+                  window.location = "{% url 'enrollment' %}"
+              }
+          });
+
+      });
+});
+
+</script>
+
+{% endblock %}
